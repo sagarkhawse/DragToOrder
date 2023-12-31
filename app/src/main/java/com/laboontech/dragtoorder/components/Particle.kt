@@ -44,7 +44,7 @@ fun Particle(modifier: Modifier, isFired: Boolean, color: Color, onCompleteAnim:
             )
         }
     }
-// SmileyFaceCanvas(modifier = modifier,topTranslation)
+
     val animatedTopTranslation = remember { Animatable(0f) }
     LaunchedEffect(isFired) {
         if (isFired) {

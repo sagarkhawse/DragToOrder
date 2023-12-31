@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
@@ -222,7 +223,8 @@ fun ItemCard(
                     .padding(slotPaddingDp)
                     .height(100.dp)
                     .align(Alignment.CenterStart)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .alpha(visibilityAlpha),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
