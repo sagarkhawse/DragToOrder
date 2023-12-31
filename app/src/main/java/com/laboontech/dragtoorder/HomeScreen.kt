@@ -1,7 +1,14 @@
 package com.laboontech.dragtoorder
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -20,11 +27,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.laboontech.dragtoorder.components.AddItemComposable
 import com.laboontech.dragtoorder.components.Particle
 import com.laboontech.dragtoorder.models.Item
 import com.laboontech.dragtoorder.models.SlideState
@@ -122,59 +132,102 @@ fun HomeScreen() {
             }
     }
 
-    Scaffold(
+    // Add dialog
+    var isAddNewItem by remember {
+        mutableStateOf(false)
+    }
 
-        topBar = {
-            Box {
-                Particle(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    isFired = isFired,
-                    color = addItem.color,
-                ) {
-                    isFired = false
-                    isVisibleStates[addItem] = true
-                }
-                TopAppBar(
-                    title = {
-                        Text(text = "Task Management")
-                    },
-                    backgroundColor = MaterialTheme.colors.background,
-                    actions = {
-                        IconButton(onClick = {
-                            addItem = allItemList.random().copy(id = id++)
+    val transition = updateTransition(targetState = isAddNewItem, label = "")
 
-                            itemList.add(0, addItem)
-                            isFired = true
-                        }) {
-                            Icon(imageVector = Icons.Filled.Add, contentDescription = null)
-                        }
-                    },
-                )
-            }
+    val blurEffect = transition.animateDp(
+        label = "",
+        transitionSpec = {
+            tween(1000)
         },
-    ) { innerPadding ->
+    ) {
+        if (it) 5.dp else 0.dp
+    } // background blur needed when showing any dialog
 
-        ItemList(
-            isVisibleStates = isVisibleStates,
-            modifier = Modifier.padding(innerPadding),
-            itemList = itemList,
-            slideStates = slideStates,
-            updateSlideState = { item, slideState ->
-                slideStates[item] = slideState
-            },
-            updateItemPosition = { currentIndex, destinationIndex ->
-                val item = itemList[currentIndex]
-                itemList.removeAt(currentIndex)
-                itemList.add(destinationIndex, item)
-                slideStates.apply {
-                    itemList.map { shoesArticle ->
-                        shoesArticle to SlideState.NONE
-                    }.toMap().also {
-                        putAll(it)
+    var value by remember {
+        mutableStateOf("")
+    }
+    val coroutine = rememberCoroutineScope()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.blur(blurEffect.value),
+            topBar = {
+                Box {
+                    Particle(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        isFired = isFired,
+                        color = addItem.color,
+                    ) {
+                        isFired = false
+                        isVisibleStates[addItem] = true
                     }
+                    TopAppBar(
+                        title = {
+                            Text(text = "Task Management")
+                        },
+                        backgroundColor = MaterialTheme.colors.background,
+                        actions = {
+                            IconButton(onClick = {
+                                isAddNewItem = true
+
+                                addItem = allItemList.random().copy(id = id++)
+
+                                itemList.add(0, addItem)
+                                isFired = true
+                            }) {
+                                Icon(imageVector = Icons.Filled.Add, contentDescription = null)
+                            }
+                        },
+                    )
                 }
             },
-        )
+        ) { innerPadding ->
+
+            ItemList(
+                isVisibleStates = isVisibleStates,
+                modifier = Modifier.padding(innerPadding),
+                itemList = itemList,
+                slideStates = slideStates,
+                updateSlideState = { item, slideState ->
+                    slideStates[item] = slideState
+                },
+                updateItemPosition = { currentIndex, destinationIndex ->
+                    val item = itemList[currentIndex]
+                    itemList.removeAt(currentIndex)
+                    itemList.add(destinationIndex, item)
+                    slideStates.apply {
+                        itemList.map { shoesArticle ->
+                            shoesArticle to SlideState.NONE
+                        }.toMap().also {
+                            putAll(it)
+                        }
+                    }
+                },
+            )
+        }
+
+        // Open add new bookmark dialog when Add click on Bookmark screen
+        AnimatedVisibility(
+            visible = isAddNewItem,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.BottomCenter),
+        ) {
+            AddItemComposable(
+                value = value,
+                onValueChange = {
+                    value = it
+                },
+                onCancelClick = {
+                        isAddNewItem = false
+                },
+                onSaveClick = {},
+            )
+        }
     }
 }
 
