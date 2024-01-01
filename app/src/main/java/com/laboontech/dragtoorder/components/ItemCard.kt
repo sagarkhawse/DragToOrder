@@ -1,5 +1,6 @@
 package com.laboontech.dragtoorder
 
+import android.content.res.Configuration
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -21,7 +22,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +53,7 @@ import androidx.compose.ui.zIndex
 import com.laboontech.dragtoorder.components.Chip
 import com.laboontech.dragtoorder.models.Item
 import com.laboontech.dragtoorder.models.SlideState
+import com.laboontech.dragtoorder.ui.theme.DragToOrderTheme
 import com.laboontech.dragtoorder.ui.theme.Purple
 import kotlinx.coroutines.launch
 import kotlin.math.hypot
@@ -254,6 +258,7 @@ fun ItemCard(
                 text = priority,
                 modifier = Modifier
                     .padding(8.dp)
+                    .background(color = MaterialTheme.colors.onBackground, shape = CircleShape)
                     .align(Alignment.BottomEnd),
                 color = item.color,
             )
@@ -277,20 +282,24 @@ fun ItemCard(
 }
 
 @ExperimentalAnimationApi
-@Preview
+@Preview("default")
+@Preview("dark-mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ShoesCardPreview() {
-    ItemCard(
-        false,
-        0,
-        Item(
-            title = "Nike Air Max 270",
-            subTitle = "2X",
-            color = Purple,
-        ),
-        SlideState.NONE,
-        mutableListOf(),
-        { _, _ -> },
-        { _, _ -> },
-    )
+    DragToOrderTheme {
+        ItemCard(
+            false,
+            0,
+            Item(
+                title = "Nike Air Max 270",
+                subTitle = "2X",
+                color = Purple,
+            ),
+            SlideState.NONE,
+            mutableListOf(),
+            { _, _ -> },
+            { _, _ -> },
+        )
+    }
+
 }

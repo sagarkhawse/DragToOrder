@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,9 +65,9 @@ fun AddItemComposable(
     onCancelClick: () -> Unit,
     onSaveClick: () -> Unit,
 ) {
-    val backgroundColor = grey
+    val backgroundColor = MaterialTheme.colors.onBackground
 
-    val textColor = MaterialTheme.colors.secondary
+    val contentColor = MaterialTheme.colors.background
 
     var isVisible by remember {
         mutableStateOf(false)
@@ -126,7 +127,7 @@ fun AddItemComposable(
         elevation = 10.dp,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),
+            modifier = Modifier.fillMaxWidth().background(color = backgroundColor).wrapContentHeight().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
@@ -134,6 +135,7 @@ fun AddItemComposable(
                 Icon(
                     painter = painterResource(id = R.drawable.close),
                     contentDescription = "",
+                    tint = contentColor
                 )
             }
 
@@ -142,6 +144,7 @@ fun AddItemComposable(
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
                 fontSize = 24.sp,
+                color = contentColor
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -149,13 +152,15 @@ fun AddItemComposable(
             TextField(
                 value = value,
                 onValueChange = onValueChange,
-                placeholder = { Text(text = "Type here", fontSize = 14.sp) },
+                placeholder = { Text(text = "Type here", fontSize = 14.sp, color = backgroundColor) },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = backgroundColor,
+                    backgroundColor = contentColor.copy(alpha = 0.8f),
                     disabledIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
+                    textColor = backgroundColor
                 ),
+                shape = RoundedCornerShape(10.dp)
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -167,6 +172,7 @@ fun AddItemComposable(
                     modifier = Modifier.weight(1f),
                     onClick = {
                         scope.launch {
+                            isVisible = false
                             delay(delayTime.milliseconds)
                             onCancelClick()
                         }

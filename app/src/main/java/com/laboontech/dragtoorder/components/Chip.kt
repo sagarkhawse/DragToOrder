@@ -24,7 +24,6 @@ fun Chip(modifier: Modifier = Modifier, text: String, color: Color) {
     Card(
         elevation = 0.dp,
         modifier = modifier,
-        backgroundColor = Color(0xFFE0E0E0),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
