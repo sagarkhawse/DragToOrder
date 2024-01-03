@@ -173,11 +173,6 @@ fun HomeScreen() {
                         actions = {
                             IconButton(onClick = {
                                 isAddNewItem = true
-
-                                addItem = allItemList.random().copy(id = id++)
-
-                                itemList.add(0, addItem)
-                                isFired = true
                             }) {
                                 Icon(imageVector = Icons.Filled.Add, contentDescription = null)
                             }
@@ -225,7 +220,12 @@ fun HomeScreen() {
                 onCancelClick = {
                         isAddNewItem = false
                 },
-                onSaveClick = {},
+                onSaveClick = {
+                    isAddNewItem = false
+                    addItem = it.copy(id = id++)
+                    itemList.add(0, addItem)
+                    isFired = true
+                },
             )
         }
     }

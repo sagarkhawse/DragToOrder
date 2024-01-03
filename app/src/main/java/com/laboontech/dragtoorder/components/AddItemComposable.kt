@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -36,39 +38,59 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.laboontech.dragtoorder.R
+import com.laboontech.dragtoorder.models.Item
+import com.laboontech.dragtoorder.ui.theme.Blue
 import com.laboontech.dragtoorder.ui.theme.DragToOrderTheme
+import com.laboontech.dragtoorder.ui.theme.Green
+import com.laboontech.dragtoorder.ui.theme.Orange
+import com.laboontech.dragtoorder.ui.theme.Pink
+import com.laboontech.dragtoorder.ui.theme.Purple
+import com.laboontech.dragtoorder.ui.theme.Red
+import com.laboontech.dragtoorder.ui.theme.Violet
+import com.laboontech.dragtoorder.ui.theme.Yellow
 import com.laboontech.dragtoorder.ui.theme.black
 import com.laboontech.dragtoorder.ui.theme.grey
 import com.laboontech.dragtoorder.ui.theme.redd
 import com.laboontech.dragtoorder.ui.theme.white
+import com.newsclez.utils.DateUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 import kotlin.time.Duration.Companion.milliseconds
 
 val delayTime = 300
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddItemComposable(
     value: String,
     onValueChange: (String) -> Unit = {},
     onCancelClick: () -> Unit,
-    onSaveClick: () -> Unit,
+    onSaveClick: (Item) -> Unit,
 ) {
     val backgroundColor = MaterialTheme.colors.onBackground
 
     val contentColor = MaterialTheme.colors.background
 
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val listColors = listOf(Purple, Orange, Blue, Red, Green, Pink, Yellow, Violet)
     var isVisible by remember {
         mutableStateOf(false)
     }
@@ -127,15 +149,16 @@ fun AddItemComposable(
         elevation = 10.dp,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().background(color = backgroundColor).wrapContentHeight().padding(20.dp),
+            modifier = Modifier.fillMaxWidth().background(color = backgroundColor)
+                .wrapContentHeight().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            IconButton(modifier = Modifier.align(Alignment.End), onClick = { /*TODO*/ }) {
+            IconButton(modifier = Modifier.align(Alignment.End), onClick = { onCancelClick() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.close),
                     contentDescription = "",
-                    tint = contentColor
+                    tint = contentColor,
                 )
             }
 
@@ -144,7 +167,7 @@ fun AddItemComposable(
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
                 fontSize = 24.sp,
-                color = contentColor
+                color = contentColor,
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -152,15 +175,28 @@ fun AddItemComposable(
             TextField(
                 value = value,
                 onValueChange = onValueChange,
-                placeholder = { Text(text = "Type here", fontSize = 14.sp, color = backgroundColor) },
+                placeholder = {
+                    Text(
+                        text = "Type here",
+                        fontSize = 14.sp,
+                        color = backgroundColor,
+                    )
+                },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = contentColor.copy(alpha = 0.8f),
                     disabledIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
-                    textColor = backgroundColor
+                    textColor = backgroundColor,
                 ),
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
+
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -189,7 +225,18 @@ fun AddItemComposable(
 
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = { onSaveClick() },
+                    onClick = {
+                        var milliseconds = System.currentTimeMillis()
+                        var date = Date(milliseconds)
+                        var mobileDateTime = DateUtil.getFormatTimeWithTZ(date)
+
+                        val item = Item(
+                            title = value,
+                            subTitle = mobileDateTime,
+                            color = listColors.random()
+                        )
+                        onSaveClick(item)
+                    },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = redd,
                         contentColor = white,
