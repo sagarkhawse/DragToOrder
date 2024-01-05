@@ -301,5 +301,4 @@ fun ShoesCardPreview() {
             { _, _ -> },
         )
     }
-
 }

@@ -87,7 +87,6 @@ fun AddItemComposable(
 
     val contentColor = MaterialTheme.colors.background
 
-
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val listColors = listOf(Purple, Orange, Blue, Red, Green, Pink, Yellow, Violet)
@@ -183,18 +182,21 @@ fun AddItemComposable(
                     )
                 },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = contentColor.copy(alpha = 0.8f),
+                    backgroundColor = contentColor,
                     disabledIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     textColor = backgroundColor,
                 ),
                 shape = RoundedCornerShape(10.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done,
+                ),
                 keyboardActions = KeyboardActions(
                     onDone = {
                         keyboardController?.hide()
-                    }
+                    },
                 ),
 
             )
@@ -205,7 +207,7 @@ fun AddItemComposable(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Button(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).height(50.dp),
                     onClick = {
                         scope.launch {
                             isVisible = false
@@ -217,6 +219,7 @@ fun AddItemComposable(
                         backgroundColor = grey,
                         contentColor = black,
                     ),
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(text = "Cancel")
                 }
@@ -224,7 +227,7 @@ fun AddItemComposable(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Button(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).height(50.dp),
                     onClick = {
                         var milliseconds = System.currentTimeMillis()
                         var date = Date(milliseconds)
@@ -233,7 +236,7 @@ fun AddItemComposable(
                         val item = Item(
                             title = value,
                             subTitle = mobileDateTime,
-                            color = listColors.random()
+                            color = listColors.random(),
                         )
                         onSaveClick(item)
                     },
@@ -241,10 +244,13 @@ fun AddItemComposable(
                         backgroundColor = redd,
                         contentColor = white,
                     ),
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(text = "Add")
                 }
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }

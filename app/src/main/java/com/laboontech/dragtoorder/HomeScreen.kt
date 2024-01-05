@@ -218,7 +218,7 @@ fun HomeScreen() {
                     value = it
                 },
                 onCancelClick = {
-                        isAddNewItem = false
+                    isAddNewItem = false
                 },
                 onSaveClick = {
                     isAddNewItem = false
